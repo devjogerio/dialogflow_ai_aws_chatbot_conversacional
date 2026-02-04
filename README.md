@@ -58,11 +58,16 @@ graph TD
 ```text
 nexus_ai_aws_final/
 ├── backend_core/           # API Django para gestão de tickets e orçamentos
+│   ├── core/               # Lógica principal (settings, wsgi, asgi)
+│   ├── tickets/            # App de gestão de chamados
+│   └── requirements.txt    # Dependências do Backend
 ├── dialogflow_automation/  # Scripts de automação do Dialogflow (IaC)
 │   ├── config/             # Configurações JSON (intents.json)
 │   ├── core/               # Lógica principal (Client, Parser, Logger)
 │   └── main.py             # Ponto de entrada do script de automação
 ├── frontend_client/        # Interface de Chat em Next.js (React)
+│   ├── src/components/     # Componentes React (ChatWindow, etc.)
+│   └── package.json        # Dependências do Frontend
 ├── lambda_functions/       # Webhooks AWS Lambda para integração
 ├── scripts/                # Scripts utilitários de deploy
 ├── tests/                  # Testes automatizados (Unitários e Integração)
@@ -95,7 +100,8 @@ python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
 
 # Instale as dependências
-pip install -r requirements.txt
+# Nota: Utilize requirements_local.txt para desenvolvimento com SQLite
+pip install -r requirements_local.txt
 
 # Execute as migrações e inicie o servidor
 python manage.py migrate
@@ -110,7 +116,7 @@ Interface de chat para o usuário final.
 cd frontend_client
 npm install
 npm run dev
-# Acesse em http://localhost:3000
+# Acesse em http://localhost:3000 (ou porta 3001 se a 3000 estiver em uso)
 ```
 
 ### 3. Automação do Dialogflow (IaC)
@@ -136,6 +142,18 @@ python dialogflow_automation/main.py --project-id SEU_PROJECT_ID --credentials c
 **Arquivos de Configuração:**
 
 - Edite `dialogflow_automation/config/intents.json` para adicionar novas intenções. O script valida automaticamente o schema do JSON.
+
+---
+
+## 📝 Changelog Recente (v1.1.0)
+
+### Backend (Django)
+- **Correção de Inicialização:** Adicionados arquivos `wsgi.py` e `asgi.py` essenciais para a execução do servidor Django, que estavam ausentes.
+- **Ambiente de Desenvolvimento:** Criado arquivo `requirements_local.txt` otimizado para desenvolvimento local, utilizando SQLite e removendo dependências estritas do PostgreSQL (`psycopg2`) que causavam conflitos em alguns ambientes macOS/Linux.
+
+### Frontend (Next.js)
+- **Correção de Componentes:** Ajuste no componente `ChatWindow.tsx` com a diretiva `"use client"` para garantir compatibilidade correta com Hooks do React (`useState`, `useEffect`) no Next.js 14 App Router.
+- **Estabilidade:** Resolução de problemas de build relacionados a Server Components importando Client Components.
 
 ---
 
