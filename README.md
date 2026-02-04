@@ -1,23 +1,30 @@
 # Nexus AI - Sistema Inteligente de Autoatendimento (AWS Edition)
 
-Bem-vindo ao repositório oficial do **Nexus AI**, uma plataforma robusta de atendimento ao cliente impulsionada por IA Generativa na AWS. Este projeto utiliza uma arquitetura moderna e escalável para automatizar interações, gerenciar chamados e fornecer suporte técnico preciso.
+Bem-vindo ao repositório oficial do **Nexus AI**, uma plataforma robusta de atendimento ao cliente impulsionada por IA Generativa na AWS e Dialogflow. Este projeto utiliza uma arquitetura moderna e escalável para automatizar interações, gerenciar chamados e fornecer suporte técnico preciso.
 
 ---
 
 ## 📋 Visão Geral do Projeto
 
-O Nexus AI foi projetado para reduzir a carga operacional de equipes de suporte (Nível 1), oferecendo respostas instantâneas e contextuais através de um chatbot inteligente.
+O Nexus AI foi projetado para reduzir a carga operacional de equipes de suporte (Nível 1), oferecendo respostas instantâneas e contextuais através de um chatbot inteligente. A solução integra Dialogflow ES para reconhecimento de intenções e AWS Bedrock para geração de respostas complexas via RAG.
 
 ### Principais Funcionalidades
-1.  **Chatbot RAG (Retrieval-Augmented Generation):**
+
+1.  **Automação de Dialogflow (Novo!):**
+    *   **Infraestrutura como Código (IaC):** Gerenciamento de Intents e Entities via arquivos JSON.
+    *   **Validação de Schema:** Garante que os arquivos de configuração estejam corretos antes da execução.
+    *   **Idempotência:** Scripts inteligentes que criam ou atualizam recursos sem duplicidade.
+    *   **Logs Detalhados:** Monitoramento completo das operações de sincronização.
+
+2.  **Chatbot RAG (Retrieval-Augmented Generation):**
     *   Utiliza **AWS Bedrock (Claude v2)** para geração de respostas humanizadas.
     *   Consulta a base de conhecimento (manuais, PDFs) indexada no **Amazon OpenSearch**.
     *   Responde dúvidas técnicas com precisão, evitando alucinações.
-2.  **Gestão Automatizada de Chamados:**
+
+3.  **Gestão Automatizada de Chamados:**
     *   Integração com **Dialogflow ES** para identificar intenções estruturadas.
     *   Abertura automática de tickets no backend **Django** quando o problema requer intervenção humana.
-3.  **Geração de Orçamentos:**
-    *   Cálculo dinâmico de propostas comerciais e simulação de envio de PDFs.
+
 4.  **Interface de Usuário Moderna:**
     *   Frontend em **Next.js** com chat em tempo real e design responsivo.
 
@@ -46,15 +53,33 @@ graph TD
 
 ---
 
+## 📂 Estrutura do Projeto
+
+```text
+nexus_ai_aws_final/
+├── backend_core/           # API Django para gestão de tickets e orçamentos
+├── dialogflow_automation/  # Scripts de automação do Dialogflow (IaC)
+│   ├── config/             # Configurações JSON (intents.json)
+│   ├── core/               # Lógica principal (Client, Parser, Logger)
+│   └── main.py             # Ponto de entrada do script de automação
+├── frontend_client/        # Interface de Chat em Next.js (React)
+├── lambda_functions/       # Webhooks AWS Lambda para integração
+├── scripts/                # Scripts utilitários de deploy
+├── tests/                  # Testes automatizados (Unitários e Integração)
+└── .env.example            # Exemplo de variáveis de ambiente
+```
+
+---
+
 ## 🚀 Guia de Instalação e Configuração
 
-Siga os passos abaixo para configurar o ambiente de desenvolvimento.
+Siga os passos abaixo para configurar o ambiente de desenvolvimento completo.
 
 ### Pré-requisitos
-*   Python 3.9+
+*   Python 3.9+ (Recomendado 3.10+)
 *   Node.js 16+
-*   Conta AWS ativa (com acesso a Bedrock, Lambda e OpenSearch)
-*   Conta Google Cloud (para Dialogflow ES)
+*   Conta AWS ativa (Bedrock, Lambda, OpenSearch)
+*   Conta Google Cloud (Dialogflow ES) e arquivo `credentials.json`
 
 ### 1. Configuração do Backend Core (Django)
 
@@ -62,21 +87,18 @@ Este módulo gerencia tickets, orçamentos e dados mestres.
 
 ```bash
 # Navegue até a pasta do backend
-cd nexus_ai_aws_final/backend_core
+cd backend_core
 
-# Crie um ambiente virtual
+# Crie e ative o ambiente virtual
 python -m venv venv
-source venv/bin/activate  # No Windows: venv\Scripts\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 
 # Instale as dependências
 pip install -r requirements.txt
 
-# Execute as migrações do banco de dados (SQLite por padrão)
+# Execute as migrações e inicie o servidor
 python manage.py migrate
-
-# Inicie o servidor de desenvolvimento
 python manage.py runserver
-# O backend estará rodando em http://localhost:8000
 ```
 
 ### 2. Configuração do Frontend (Next.js)
@@ -84,61 +106,73 @@ python manage.py runserver
 Interface de chat para o usuário final.
 
 ```bash
-# Navegue até a pasta do frontend
-cd nexus_ai_aws_final/frontend_client
-
-# Instale as dependências
+cd frontend_client
 npm install
-
-# Inicie o servidor de desenvolvimento
 npm run dev
-# Acesse o chat em http://localhost:3000
+# Acesse em http://localhost:3000
 ```
 
-### 3. Configuração da AWS Lambda (Webhook)
+### 3. Automação do Dialogflow (IaC)
 
-O "cérebro" que conecta o Dialogflow aos serviços AWS.
+Este módulo permite sincronizar suas intenções e entidades definidas em JSON diretamente com o Dialogflow.
 
-1.  Acesse a pasta `nexus_ai_aws_final/lambda_functions`.
-2.  Instale as dependências localmente para empacotamento:
-    ```bash
-    pip install -r requirements.txt -t .
-    ```
-3.  Crie um arquivo ZIP contendo todo o conteúdo da pasta.
-4.  Faça o upload para uma nova função AWS Lambda (Runtime Python 3.9+).
-5.  Configure as **Variáveis de Ambiente** no console da AWS:
-    *   `BEDROCK_REGION`: Região do modelo (ex: `us-east-1`)
-    *   `OPENSEARCH_HOST`: Endpoint do seu domínio OpenSearch
-    *   `OPENSEARCH_INDEX`: Nome do índice (ex: `knowledge-base`)
-    *   `DJANGO_API_URL`: URL pública do seu backend Django (use ngrok para testes locais)
+**Instalação:**
 
----
+```bash
+# Na raiz do projeto
+python -m venv venv_stable
+source venv_stable/bin/activate
+pip install -r dialogflow_automation/requirements.txt
+```
 
-## 📚 Documentação da API (Backend Core)
+**Execução:**
 
-O backend expõe os seguintes endpoints REST:
+```bash
+# Sincronizar Intents e Entities
+python dialogflow_automation/main.py --project-id SEU_PROJECT_ID --credentials credentials.json
+```
 
-*   **Tickets** (`/api/tickets/`)
-    *   `GET`: Lista todos os chamados.
-    *   `POST`: Cria um novo chamado (usado pelo Lambda).
-    *   Payload exemplo:
-        ```json
-        {
-          "customer_name": "João Silva",
-          "problem_description": "Servidor não inicia",
-          "status": "OPEN"
-        }
-        ```
-*   **Orçamentos** (`/api/budgets/`)
-    *   Gerenciamento de propostas geradas.
+**Arquivos de Configuração:**
+*   Edite `dialogflow_automation/config/intents.json` para adicionar novas intenções. O script valida automaticamente o schema do JSON.
 
 ---
 
 ## 🧪 Testes e Validação
 
-1.  **Teste de Unidade (Backend):** Execute `python manage.py test` no diretório `backend_core`.
-2.  **Teste de Interface:** Abra o chat no navegador e envie "Tenho uma dúvida técnica".
-3.  **Teste de Integração:** Verifique os logs do CloudWatch para garantir que o Lambda está invocando o Bedrock e o OpenSearch corretamente.
+### Testes de Unidade (Automação)
+O projeto inclui uma suite de testes para garantir a integridade da automação do Dialogflow.
+
+```bash
+# Execute na raiz do projeto
+python -m unittest discover tests/dialogflow_automation
+```
+
+### Testes de Backend
+```bash
+cd backend_core
+python manage.py test
+```
+
+---
+
+## 🔐 Variáveis de Ambiente
+
+Crie um arquivo `.env` na raiz do projeto baseado no `.env.example`. As principais variáveis são:
+
+```env
+# AWS Configuration
+BEDROCK_REGION=us-east-1
+OPENSEARCH_HOST=seu-endpoint.opensearch.amazonaws.com
+OPENSEARCH_INDEX=knowledge-base
+
+# Django Configuration
+DJANGO_SECRET_KEY=sua-chave-secreta-segura
+DEBUG=True
+
+# Dialogflow Automation
+GOOGLE_APPLICATION_CREDENTIALS=./credentials.json
+DIALOGFLOW_PROJECT_ID=nexus-ai-aws-v1-ahuj
+```
 
 ---
 
@@ -146,9 +180,9 @@ O backend expõe os seguintes endpoints REST:
 
 1.  Faça um Fork do projeto.
 2.  Crie uma Branch para sua feature (`git checkout -b feature/MinhaFeature`).
-3.  Commit suas mudanças (`git commit -m 'Adiciona MinhaFeature'`).
+3.  Commit suas mudanças (`git commit -m 'feat: Adiciona nova funcionalidade X'`).
 4.  Push para a Branch (`git push origin feature/MinhaFeature`).
-5.  Abra um Pull Request.
+5.  Abra um Pull Request detalhando suas alterações.
 
 ---
 
