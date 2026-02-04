@@ -26,6 +26,7 @@ Recomenda-se o uso de **Python 3.9 a 3.12**.
    ```
 
 2. Instale as dependências:
+
    ```bash
    pip install -r dialogflow_automation/requirements.txt
    ```

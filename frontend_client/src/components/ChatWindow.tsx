@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect, useRef } from 'react';
 
 // Interface que define a estrutura de dados de uma mensagem no chat
