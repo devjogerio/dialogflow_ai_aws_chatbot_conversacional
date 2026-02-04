@@ -184,10 +184,11 @@ class DialogflowClient:
         except AlreadyExists:
             logger.warning(f"Entidade '{display_name}' já existe. Ignorando.")
         except Exception as e:
-            # Dialogflow às vezes retorna 409 como erro genérico se o display_name já existe
-            if "409" in str(e):
+            error_msg = str(e)
+            # Dialogflow pode retornar 409 (Conflict) ou 400 (FailedPrecondition) se já existe
+            if "409" in error_msg or "already exists" in error_msg:
                 logger.warning(
-                    f"Entidade '{display_name}' provavelmente já existe (409). Ignorando.")
+                    f"Entidade '{display_name}' já existe (detectado via erro API). Ignorando.")
             else:
                 logger.error(f"Erro ao criar entidade '{display_name}': {e}")
                 raise
