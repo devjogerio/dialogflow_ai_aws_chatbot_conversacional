@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useState, useEffect, useRef } from 'react';
 
 // Interface que define a estrutura de dados de uma mensagem no chat
@@ -64,7 +66,7 @@ const ChatWindow: React.FC = () => {
       // Chamada real para a API do Backend
       // Utiliza a variável de ambiente NEXT_PUBLIC_API_URL para definir o endpoint
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-      
+
       const res = await fetch(`${apiUrl}/api/chat/`, {
         method: 'POST',
         headers: {
@@ -78,7 +80,8 @@ const ChatWindow: React.FC = () => {
       }
 
       const data = await res.json();
-      const responseText = data.response || "Desculpe, não consegui processar sua solicitação.";
+      const responseText =
+        data.response || 'Desculpe, não consegui processar sua solicitação.';
 
       // Constrói o objeto da mensagem de resposta do Bot
       const botMessage: Message = {
@@ -95,7 +98,7 @@ const ChatWindow: React.FC = () => {
       // Adiciona mensagem de erro visual para o usuário
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        text: "Desculpe, ocorreu um erro ao conectar com o servidor. Tente novamente mais tarde.",
+        text: 'Desculpe, ocorreu um erro ao conectar com o servidor. Tente novamente mais tarde.',
         sender: 'bot',
         timestamp: new Date(),
       };
