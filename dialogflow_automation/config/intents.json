@@ -1,0 +1,60 @@
+[
+    {
+        "display_name": "duvida_tecnica",
+        "training_phrases": [
+            "Como reinicio o servidor?",
+            "A luz vermelha está piscando",
+            "Erro no sistema",
+            "Não consigo acessar o banco de dados"
+        ],
+        "messages": [
+            "Essa é uma dúvida técnica. Vou consultar nossa base de conhecimento..."
+        ]
+    },
+    {
+        "display_name": "abrir_chamado",
+        "training_phrases": [
+            "Quero abrir um chamado",
+            "Preciso de suporte técnico",
+            "Meu sistema parou de funcionar",
+            "Registrar um problema"
+        ],
+        "parameters": [
+            {
+                "display_name": "person",
+                "entity_type_display_name": "@sys.person",
+                "mandatory": true,
+                "prompts": ["Qual é o seu nome?"]
+            },
+            {
+                "display_name": "problem_description",
+                "entity_type_display_name": "@sys.any",
+                "mandatory": true,
+                "prompts": ["Por favor, descreva o problema brevemente."]
+            }
+        ],
+        "messages": [
+            "Entendi. Estou registrando seu chamado..."
+        ]
+    },
+    {
+        "display_name": "gerar_orcamento",
+        "training_phrases": [
+            "Quanto custa a consultoria?",
+            "Gostaria de um orçamento",
+            "Preço do serviço premium",
+            "Cotação para desenvolvimento"
+        ],
+        "parameters": [
+            {
+                "display_name": "service_type",
+                "entity_type_display_name": "@sys.any",
+                "mandatory": true,
+                "prompts": ["Qual tipo de serviço você deseja orçar? (Consultoria Padrão ou Premium)"]
+            }
+        ],
+        "messages": [
+            "Calculando o orçamento para você..."
+        ]
+    }
+]
