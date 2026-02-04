@@ -2,6 +2,23 @@
 
 Este documento registra a evolução cronológica do projeto, destacando marcos importantes, novas funcionalidades e correções.
 
+## [v1.1.1] - Governança e Versionamento
+**Data de Lançamento:** 04 de Fevereiro de 2026
+**Status:** Desenvolvimento
+**Responsável:** Arquiteto de Software (Simulado)
+
+### 🛡️ Governança de Código
+- **Git Flow:** Implementação da estrutura de branches (`main`, `develop`, `feature/*`).
+- **Padronização:** Configuração de `.gitignore` robusto para ignorar artefatos de build e arquivos sensíveis.
+- **Code Review:** Criação de template de Pull Request (`.github/pull_request_template.md`) para garantir qualidade nas revisões.
+- **Documentação:** Atualização do roadmap para refletir o ciclo de vida do desenvolvimento.
+
+### 🔧 Ajustes Técnicos
+- Configuração inicial do repositório Git.
+- Definição de estratégia de commits semânticos (Conventional Commits).
+
+---
+
 ## [v1.1.0] - Dockerização e Integração Completa
 **Data de Lançamento:** 04 de Fevereiro de 2026
 **Status:** Release Candidate (RC)
