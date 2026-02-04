@@ -1,0 +1,103 @@
+# ==============================================================================
+# .gitignore - Configuração de Exclusão de Arquivos para o Projeto Nexus AI
+# ==============================================================================
+# Este arquivo instrui o Git sobre quais arquivos ou diretórios devem ser ignorados.
+# Isso é crucial para evitar enviar arquivos sensíveis, binários compilados ou
+# dependências locais para o repositório remoto.
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. ARQUIVOS DE SISTEMA OPERACIONAL E IDEs
+# ------------------------------------------------------------------------------
+# Arquivos gerados pelo macOS (metadados de pasta)
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Arquivos gerados pelo Windows
+Thumbs.db
+ehthumbs.db
+
+# Configurações de editores de código (VS Code, JetBrains)
+# Não queremos impor configurações pessoais de editor ao time
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ------------------------------------------------------------------------------
+# 2. SEGURANÇA E VARIÁVEIS DE AMBIENTE (CRÍTICO)
+# ------------------------------------------------------------------------------
+# NUNCA versione arquivos .env contendo senhas ou chaves de API
+.env
+.env.local
+.env.*.local
+# Exceção: mantemos o .env.example para documentação
+!.env.example
+
+# ------------------------------------------------------------------------------
+# 3. PYTHON / DJANGO (Backend & Lambdas)
+# ------------------------------------------------------------------------------
+# Bytecode compilado do Python (não é necessário no repo)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ambientes virtuais (devem ser recriados via requirements.txt)
+venv/
+.venv/
+env/
+.env_python/
+
+# Banco de dados local SQLite (se usado localmente)
+db.sqlite3
+db.sqlite3-journal
+
+# Diretórios de mídia/upload (geralmente armazenados em S3/Bucket em prod)
+media/
+static/
+
+# Relatórios de cobertura de testes
+htmlcov/
+.coverage
+.tox/
+.pytest_cache/
+
+# ------------------------------------------------------------------------------
+# 4. NODE.JS / NEXT.JS (Frontend)
+# ------------------------------------------------------------------------------
+# Dependências do projeto (são instaladas via package.json)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Builds de produção do Next.js
+.next/
+out/
+build/
+dist/
+
+# Cache do Next.js
+.open-next/
+.sst/
+
+# Arquivos de ambiente local do Next.js
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# ------------------------------------------------------------------------------
+# 5. DOCKER
+# ------------------------------------------------------------------------------
+# Arquivos de estado ou logs de container se gerados localmente
+docker-compose.override.yml
+
+# ------------------------------------------------------------------------------
+# 6. LOGS GERAIS
+# ------------------------------------------------------------------------------
+*.log
+logs/

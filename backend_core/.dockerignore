@@ -1,0 +1,22 @@
+# Ignora arquivos de cache do Python e ambientes virtuais
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Ignora banco de dados SQLite local
+db.sqlite3
+db.sqlite3-journal
+
+# Ignora arquivos de configuração local e sensíveis
+.env
+.DS_Store
+
+# Ignora Git
+.git
+.gitignore

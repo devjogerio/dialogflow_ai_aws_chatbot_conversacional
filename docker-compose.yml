@@ -1,0 +1,90 @@
+version: '3.8'
+
+# Definição dos serviços que compõem a aplicação
+services:
+  # Serviço de Banco de Dados PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: nexus_db
+    # Reinicia automaticamente caso falhe, exceto se parado manualmente
+    restart: unless-stopped
+    volumes:
+      # Persistência de dados: mapeia volume nomeado para o diretório de dados do Postgres
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      # Credenciais definidas no arquivo .env
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    ports:
+      # Expõe a porta 5432 para acesso local (ferramentas de DB como DBeaver)
+      - "5432:5432"
+    networks:
+      - nexus_network
+
+  # Serviço Backend (Django)
+  backend:
+    build:
+      context: ./backend_core
+      dockerfile: Dockerfile
+    container_name: nexus_backend
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      # Mapeia o código local para dentro do container para Hot Reloading
+      - ./backend_core:/app
+    ports:
+      # Expõe a API na porta 8000
+      - "8000:8000"
+    environment:
+      # Configurações do Django e conexão com Banco de Dados
+      - DEBUG=True
+      - SECRET_KEY=${SECRET_KEY}
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=db
+      - DB_PORT=5432
+      # Credenciais AWS para acesso ao Bedrock/OpenSearch (carregadas do .env)
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+    depends_on:
+      # Garante que o container do banco inicie antes do backend
+      - db
+    networks:
+      - nexus_network
+
+  # Serviço Frontend (Next.js)
+  frontend:
+    build:
+      context: ./frontend_client
+      dockerfile: Dockerfile
+    container_name: nexus_frontend
+    command: npm run dev
+    volumes:
+      # Mapeia o código local para Hot Reloading
+      - ./frontend_client:/app
+      # Evita que node_modules local sobrescreva o do container
+      - /app/node_modules
+    ports:
+      # Expõe a aplicação web na porta 3000
+      - "3000:3000"
+    environment:
+      # URL da API para chamadas server-side (dentro da rede Docker)
+      - API_URL=http://backend:8000
+      # URL da API para chamadas client-side (navegador)
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - backend
+    networks:
+      - nexus_network
+
+# Definição de volumes persistentes
+volumes:
+  postgres_data:
+
+# Definição de redes para isolamento e comunicação
+networks:
+  nexus_network:
+    driver: bridge
