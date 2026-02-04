@@ -1,5 +1,6 @@
 'use client';
 
+"use client";
 import React, { useState, useEffect, useRef } from 'react';
 
 // Interface que define a estrutura de dados de uma mensagem no chat
@@ -32,6 +33,8 @@ const ChatWindow: React.FC = () => {
 
   // Referência para o elemento final da lista, usada para rolagem automática
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  // Referência para o input, para focar após o envio
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // --- Efeitos Colaterais (Side Effects) ---
 
@@ -40,10 +43,18 @@ const ChatWindow: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // Foca no input ao carregar o componente
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
   // --- Handlers de Eventos ---
 
   // Função acionada ao enviar uma nova mensagem
-  const handleSendMessage = async () => {
+  const handleSendMessage = async (e?: React.FormEvent) => {
+    // Previne o comportamento padrão de recarregamento do formulário
+    if (e) e.preventDefault();
+
     // Validação básica: não envia se estiver vazio ou apenas espaços
     if (!inputText.trim()) return;
 
@@ -61,6 +72,9 @@ const ChatWindow: React.FC = () => {
     // Limpa o campo de input e define estado de carregamento
     setInputText('');
     setIsLoading(true);
+
+    // Mantém o foco no input para digitação contínua
+    inputRef.current?.focus();
 
     try {
       // Chamada real para a API do Backend
@@ -126,7 +140,13 @@ const ChatWindow: React.FC = () => {
       </div>
 
       {/* Área de Visualização de Mensagens (Scrollable) */}
-      <div className="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-4">
+      <div
+        className="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-4"
+        role="log"
+        aria-live="polite"
+        aria-atomic="false"
+        aria-label="Histórico do Chat"
+      >
         {/* Mensagem de boas-vindas condicional (apenas se não houver mensagens) */}
         {messages.length === 0 && (
           <div className="text-center text-gray-500 mt-10 text-sm p-6 bg-gray-100 rounded-lg mx-4">
@@ -154,6 +174,7 @@ const ChatWindow: React.FC = () => {
               {msg.text}
               <div
                 className={`text-[10px] mt-1 text-right ${msg.sender === 'user' ? 'text-indigo-200' : 'text-gray-400'}`}
+                aria-label={`Enviado às ${msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`}
               >
                 {msg.timestamp.toLocaleTimeString([], {
                   hour: '2-digit',
@@ -166,7 +187,10 @@ const ChatWindow: React.FC = () => {
 
         {/* Indicador de "Digitando..." */}
         {isLoading && (
-          <div className="flex justify-start animate-pulse">
+          <div
+            className="flex justify-start animate-pulse"
+            aria-label="Bot está digitando..."
+          >
             <div className="bg-gray-200 p-3 rounded-lg rounded-bl-none text-xs text-gray-500 flex items-center gap-1">
               <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
               <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-75"></span>
@@ -180,21 +204,26 @@ const ChatWindow: React.FC = () => {
       </div>
 
       {/* Área de Input (Rodapé) */}
-      <div className="p-4 bg-white border-t border-gray-100 flex gap-2 items-center">
+      <form
+        onSubmit={handleSendMessage}
+        className="p-4 bg-white border-t border-gray-100 flex gap-2 items-center"
+      >
         <input
+          ref={inputRef}
           type="text"
-          className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition-shadow"
+          className="flex-1 border border-gray-300 rounded-full px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition-shadow disabled:bg-gray-100 disabled:text-gray-500"
           placeholder="Digite sua dúvida aqui..."
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()} // Envia ao pressionar Enter
           disabled={isLoading} // Bloqueia input enquanto carrega
+          aria-label="Digite sua mensagem"
         />
         <button
-          onClick={handleSendMessage}
+          type="submit"
           disabled={isLoading || !inputText.trim()}
-          className="bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+          className="bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 focus:outline-none"
           title="Enviar Mensagem"
+          aria-label="Enviar Mensagem"
         >
           {/* Ícone de Enviar (SVG) */}
           <svg
@@ -204,6 +233,7 @@ const ChatWindow: React.FC = () => {
             strokeWidth={2}
             stroke="currentColor"
             className="w-5 h-5"
+            aria-hidden="true"
           >
             <path
               strokeLinecap="round"
@@ -212,7 +242,7 @@ const ChatWindow: React.FC = () => {
             />
           </svg>
         </button>
-      </div>
+      </form>
     </div>
   );
 };

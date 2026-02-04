@@ -14,6 +14,14 @@ DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 # Hosts permitidos para acessar a aplicação
 ALLOWED_HOSTS = ['*']
 
+# Configuração de CORS
+CORS_ALLOW_ALL_ORIGINS = True  # Para desenvolvimento local, permite qualquer origem
+# Para produção, especifique:
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",
+#     "http://127.0.0.1:3000",
+# ]
+
 # Definição dos aplicativos instalados no projeto
 INSTALLED_APPS = [
     'django.contrib.admin',          # Painel administrativo
@@ -23,6 +31,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',       # Framework de mensagens
     'django.contrib.staticfiles',    # Arquivos estáticos (CSS, JS, Imagens)
     'rest_framework',                # Django REST Framework para criação de APIs
+    'corsheaders',                   # CORS headers
     'tickets',                       # Nosso aplicativo customizado de Tickets
 ]
 
@@ -30,6 +39,8 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    # CORS Middleware (deve vir antes do CommonMiddleware)
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
