@@ -11,22 +11,22 @@ O Nexus AI foi projetado para reduzir a carga operacional de equipes de suporte 
 ### Principais Funcionalidades
 
 1.  **Automação de Dialogflow (Novo!):**
-    *   **Infraestrutura como Código (IaC):** Gerenciamento de Intents e Entities via arquivos JSON.
-    *   **Validação de Schema:** Garante que os arquivos de configuração estejam corretos antes da execução.
-    *   **Idempotência:** Scripts inteligentes que criam ou atualizam recursos sem duplicidade.
-    *   **Logs Detalhados:** Monitoramento completo das operações de sincronização.
+    - **Infraestrutura como Código (IaC):** Gerenciamento de Intents e Entities via arquivos JSON.
+    - **Validação de Schema:** Garante que os arquivos de configuração estejam corretos antes da execução.
+    - **Idempotência:** Scripts inteligentes que criam ou atualizam recursos sem duplicidade.
+    - **Logs Detalhados:** Monitoramento completo das operações de sincronização.
 
 2.  **Chatbot RAG (Retrieval-Augmented Generation):**
-    *   Utiliza **AWS Bedrock (Claude v2)** para geração de respostas humanizadas.
-    *   Consulta a base de conhecimento (manuais, PDFs) indexada no **Amazon OpenSearch**.
-    *   Responde dúvidas técnicas com precisão, evitando alucinações.
+    - Utiliza **AWS Bedrock (Claude v2)** para geração de respostas humanizadas.
+    - Consulta a base de conhecimento (manuais, PDFs) indexada no **Amazon OpenSearch**.
+    - Responde dúvidas técnicas com precisão, evitando alucinações.
 
 3.  **Gestão Automatizada de Chamados:**
-    *   Integração com **Dialogflow ES** para identificar intenções estruturadas.
-    *   Abertura automática de tickets no backend **Django** quando o problema requer intervenção humana.
+    - Integração com **Dialogflow ES** para identificar intenções estruturadas.
+    - Abertura automática de tickets no backend **Django** quando o problema requer intervenção humana.
 
 4.  **Interface de Usuário Moderna:**
-    *   Frontend em **Next.js** com chat em tempo real e design responsivo.
+    - Frontend em **Next.js** com chat em tempo real e design responsivo.
 
 ---
 
@@ -39,15 +39,15 @@ graph TD
     User[Usuário Final] -->|Interage| NextJS[Frontend Client (Next.js)]
     NextJS -->|API| Dialogflow[Dialogflow ES Agent]
     Dialogflow -->|Webhook| Lambda[AWS Lambda (Webhook Handler)]
-    
+
     subgraph "AWS Cloud Ecosystem"
         Lambda -->|Busca Contexto| OpenSearch[Amazon OpenSearch (Vector DB)]
         Lambda -->|Gera Resposta| Bedrock[AWS Bedrock (Claude Model)]
         Lambda -->|Cria Ticket| DjangoAPI[Backend Core (Django REST)]
-        
+
         OpenSearch -.->|Indexa| S3[Amazon S3 (Knowledge Base)]
     end
-    
+
     DjangoAPI -->|Persiste Dados| RDS[Amazon RDS (PostgreSQL)]
 ```
 
@@ -76,10 +76,11 @@ nexus_ai_aws_final/
 Siga os passos abaixo para configurar o ambiente de desenvolvimento completo.
 
 ### Pré-requisitos
-*   Python 3.9+ (Recomendado 3.10+)
-*   Node.js 16+
-*   Conta AWS ativa (Bedrock, Lambda, OpenSearch)
-*   Conta Google Cloud (Dialogflow ES) e arquivo `credentials.json`
+
+- Python 3.9+ (Recomendado 3.10+)
+- Node.js 16+
+- Conta AWS ativa (Bedrock, Lambda, OpenSearch)
+- Conta Google Cloud (Dialogflow ES) e arquivo `credentials.json`
 
 ### 1. Configuração do Backend Core (Django)
 
@@ -133,13 +134,15 @@ python dialogflow_automation/main.py --project-id SEU_PROJECT_ID --credentials c
 ```
 
 **Arquivos de Configuração:**
-*   Edite `dialogflow_automation/config/intents.json` para adicionar novas intenções. O script valida automaticamente o schema do JSON.
+
+- Edite `dialogflow_automation/config/intents.json` para adicionar novas intenções. O script valida automaticamente o schema do JSON.
 
 ---
 
 ## 🧪 Testes e Validação
 
 ### Testes de Unidade (Automação)
+
 O projeto inclui uma suite de testes para garantir a integridade da automação do Dialogflow.
 
 ```bash
@@ -148,6 +151,7 @@ python -m unittest discover tests/dialogflow_automation
 ```
 
 ### Testes de Backend
+
 ```bash
 cd backend_core
 python manage.py test
