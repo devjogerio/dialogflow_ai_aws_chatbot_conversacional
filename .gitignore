@@ -32,6 +32,12 @@ ehthumbs.db
 .env
 .env.local
 .env.*.local
+# Arquivos de credenciais JSON (Google Cloud, AWS, etc)
+*.json
+!package.json
+!tsconfig.json
+!dialogflow_automation/config/*.json
+credentials.json
 # Exceção: mantemos o .env.example para documentação
 !.env.example
 
@@ -49,6 +55,7 @@ venv/
 .venv/
 env/
 .env_python/
+venv_stable/
 
 # Banco de dados local SQLite (se usado localmente)
 db.sqlite3
