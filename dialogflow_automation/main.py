@@ -81,7 +81,25 @@ def main():
 
     try:
         # Carrega a definição de intenções do arquivo JSON
+        # O parser valida a estrutura do JSON antes de retornar
         intents_list = config_parser.load_intents()
+        
+        # Simulação de carregamento de Entidades (poderia vir de entities.json)
+        # Aqui definimos hardcoded para exemplo, mas deveria estar em config/
+        entities_config = [
+            {
+                "display_name": "TipoServico",
+                "kind": "KIND_MAP",
+                "entities": [
+                    {"value": "Consultoria Padrão", "synonyms": ["padrão", "básica", "standard"]},
+                    {"value": "Consultoria Premium", "synonyms": ["premium", "completa", "avançada"]}
+                ]
+            }
+        ]
+
+        logger.info("Iniciando criação de Entidades...")
+        for ent in entities_config:
+            df_client.create_entity_type(ent['display_name'], ent['kind'], ent['entities'])
         
         logger.info(f"Iniciando sincronização de {len(intents_list)} intenções...")
 
@@ -91,10 +109,13 @@ def main():
                 display_name=intent_data['display_name'],
                 training_phrases_parts=intent_data['training_phrases'],
                 message_texts=intent_data['messages'],
-                parameters=intent_data.get('parameters')
+                parameters=intent_data.get('parameters'),
+                input_context_names=intent_data.get('input_context_names'),
+                output_contexts=intent_data.get('output_contexts')
             )
             
         logger.info("Processo de sincronização concluído com sucesso! 🚀")
+        logger.info("Verifique o agente no console: https://dialogflow.cloud.google.com/#/agent/nexus-ai-aws-v1-ahuj/intents")
 
     except Exception as e:
         logger.error(f"Erro durante o processo de execução: {e}")
